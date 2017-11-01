@@ -11,3 +11,4 @@ Using these tools, we have to write a program to the car to be able to:
 *  recognize traffic and road signs
 
 Our scope is to make a precise software, which avoid accidents and can navigate easily in the traffic.
+
