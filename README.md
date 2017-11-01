@@ -9,6 +9,7 @@ Using these tools, we have to write a program to the car to be able to:
 *  move in the traffic
 *  find parking place and to park (parallel or perpendicular to the edge of the road)
 *  recognize traffic and road signs
+*  recognize road painting with camera
 
 Our scope is to make a precise software, which avoid accidents and can navigate easily in the traffic.
 
