@@ -5,8 +5,7 @@ class Application(tk.Frame):
         super().__init__(master)
         self.pack()
         self.create_widgets()
-        master.geometry('{}x{}+1+1'.format(master.winfo_screenwidth(), master.winfo_screenheight() - 75))
-
+        
     def create_widgets(self):
         self.hi_there = tk.Button(self)
         self.hi_there["text"] = "Hello World\n(click me)"
@@ -22,7 +21,5 @@ class Application(tk.Frame):
 
 if __name__ == '__main__':
     root = tk.Tk()
-    root.attributes("-fullscreen", True)
-    root.bind('<Escape>', root.destroy())
     app = Application(master=root)
     app.mainloop()
