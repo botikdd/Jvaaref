@@ -1,6 +1,6 @@
 # Jvaaref
 
-This project is about to write a mini robot pilot for an Audi A3 which is 10 times smaller than the original one. This model will have:
+This project is about to write a mini robot pilot for an Audi RS4 which is 10 times smaller than the original one. This model will have:
 *  a camera
 *  6 distance sensors
 *  a Raspberry PI
