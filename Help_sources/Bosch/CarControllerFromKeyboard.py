@@ -37,16 +37,16 @@ def main():
 
             action = input("Action: ")
 
-            if action == "w":
+            if action == "w" and speed <= 9.0:
                 speed = speed + 1.0
                 print("Speed: " + str(speed))
-            elif action == "s":
+            elif action == "s" and speed >= 1.0:
                 speed = speed - 1.0
                 print("Speed: " + str(speed))
-            elif action == "d":
+            elif action == "d" and angle <= 8.0:
                 angle = angle + 2.0
                 print("Angle: " + str(angle))
-            elif action == "a":
+            elif action == "a" and angle >= 8.0:
                 angle = angle - 2.0
                 print("Angle: " + str(angle))
 
