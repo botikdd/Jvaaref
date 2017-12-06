@@ -27,7 +27,8 @@ while(True):
     cv2.imwrite('./Resources/thresh.png', thresh)
 
     # Find the contours of the frame
-    contours, hierarchy = cv2.findContours(thresh.copy(), 1, cv2.CHAIN_APPROX_NONE)
+    
+    _, contours, hierarchy = cv2.findContours(thresh.copy(), 1, cv2.CHAIN_APPROX_NONE)
 
     # Find the biggest contour (if detected)
     if len(contours) > 0:
