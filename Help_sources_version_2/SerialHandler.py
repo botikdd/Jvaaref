@@ -177,7 +177,7 @@ class SerialHandler:
         else:
             return False
     def sendProximityRequest(self, activate=True):
-    	str_msg=MessageConverter.DSPB(activate)
+        str_msg=MessageConverter.DSPB(activate)
         if str_msg!="":
             self.send(str_msg)
             return True
