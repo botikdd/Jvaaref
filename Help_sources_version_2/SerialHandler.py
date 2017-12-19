@@ -47,8 +47,6 @@ class MessageConverter:
             l_value=1
         return '#SFBR:%d;'%l_value+';\r\n'
 
-
-
 class ReadThread(threading.Thread):
     class CallbackEvent:
         def __init__(self,event,callbackFunc):
