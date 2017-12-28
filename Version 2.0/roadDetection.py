@@ -4,6 +4,7 @@
 import cv2
 import numpy as np
 import math
+import time
 
 #change the image into gray scale:
 def grayscaleImage(img):
@@ -21,7 +22,7 @@ def cannyImg(img,low_threshold,high_threshold):
 
 	return cv2.Canny(img,low_threshold,high_threshold)
 
-def getPolygon(image):
+def getPolygon(image_proba,i):
 
 	'''
 	Get the vertices of the polygon
@@ -39,24 +40,35 @@ def getPolygon(image):
 
 	'''
 
-	rows = image.shape[0] 	# 2464
-	cols = image.shape[1]	# 3280
+	rows = image_proba.shape[0] 	# 2464
+	cols = image_proba.shape[1]		# 3280
 
 	bottom_left  = [cols*0.4, rows*0.4]
-	top_left     = [cols*0.1, rows*0.9]
-	bottom_right = [cols*0.9, rows*0.9]
+	top_left     = [cols*0.15, rows*0.9]
+	bottom_right = [cols*0.95, rows*0.9]
 	top_right    = [cols*0.6, rows*0.32]
+
 	
-	edges = np.array([[bottom_left, top_left, top_right, bottom_right]], dtype=np.int32)
+	#TEST: draw the polygon
+	'''
+	
+	cv2.circle(image_proba,(int(cols*0.4), int(rows*0.4)),20,(255,0,0),-1)
+	cv2.circle(image_proba,(int(cols*0.15), int(rows*0.9)),20,(255,0,0),-1)
+	cv2.circle(image_proba,(int(cols*0.95), int(rows*0.9)),20,(255,0,0),-1)
+	cv2.circle(image_proba,(int(cols*0.6), int(rows*0.32)),20,(255,0,0),-1)
 
-	return edges
+	proba = "proba" + str(i) + ".jpg"
 
-def maskImage(img):
+	cv2.imwrite(proba,image_proba)
+	'''
+	return np.array([[bottom_left, top_left, top_right, bottom_right]], dtype=np.int32)
+
+def maskImage(img,i):
 	
 	#step 1: apply an image mask
 	#step 2: keep only the region of the image defined by the polygon (vertices)
 
-	vertices = getPolygon(img)
+	vertices = getPolygon(img,i)
 
 	# apply the mask
 	mask = np.zeros_like(img)
@@ -66,12 +78,8 @@ def maskImage(img):
 	#else (255,) * mask.shape[2]
 	cv2.fillPoly(mask, vertices, 255)
 
-	#cv2.imwrite('proba.jpg',mask)
-
 	#bitwise_and --> Calculates the per-element bit-wise conjuction of two arrays or an array and a scalar
-	masked_image = cv2.bitwise_and(img, mask)
-
-	return masked_image
+	return 	cv2.bitwise_and(img, mask)
 
 def hough_transform(img,rho,theta,threshold,min_line_len,max_line_gap):
 
@@ -140,6 +148,16 @@ def avarage_lanes(lines):
 	else:
 		right_lane = None
 
+
+	#print("Bal sav hossza: ", len(left_lines))
+	#print("Jobb sav hossza: ", len(right_lines))
+
+	if len(left_lines) * 3 < len(right_lines):
+		left_lane = None
+	if len(right_lines) * 3 < len(left_lines):
+		right_lane = None
+
+
 	return left_lane,right_lane
 
 def line_pixels(y1,y2,line):
@@ -190,86 +208,111 @@ def angle_of_lines(left,right):
 
 	# angle = atan(y2-y1,x2-x1) * 180 / pi
 
-	turn_left = 0
-	turn_right = 0
-
 	if left is None:
 		print("No left line recognized.")
 		angle_left = 0
-		turn_left = 1
 	else:
 		angle_left = np.arctan2(left[0][1]-left[1][1],left[0][0]-left[1][0]) * 180/np.pi
 
 	if right is None:
 		print("No right line recognized.")
 		angle_right = 0
-		turn_right = 1
 	else:
 		angle_right = np.arctan2(right[1][1]-right[0][1],right[1][0]-right[0][0]) * 180/np.pi
 
 	angle_left = abs(angle_left)
 	angle_right = abs(angle_right)
 
+	print("Angles: ")
+	print("Left: ",angle_left)
+	print("Right: ",angle_right)
 
-	if (abs(angle_left - angle_right) < 1.5):
+	if (abs(angle_left - angle_right) < 1.5) and angle_right != 0 and angle_left != 0:
 		print("OK")
+		# if start == false
+		#	start = true
+		#	start()
+		#  else
+		#	mehet tovabb
 	else:
 		print("El van fordulva.")
+		if angle_left < angle_right:
+			print("Jobb szog nagyobb. Balra kell kanyarodni")
 
-
-	print(angle_left)
-	print(angle_right)
+		else:
+			print("Bal szog nagyobb. Jobbra kell kanyarodni")
+		#break
+		#merre kell forduljon az auto
 
 	return angle_left,angle_right
 
-
 if __name__ == "__main__":
 
-	#load image
-	try:
-		image = cv2.imread('road_direction_lessleft.jpg')
-	except FileNotFoundError:
-		raise ValueError("Image not found!")
+	i = 0
 
-	#grayscale the image
-	grayscale = grayscaleImage(image)
-	cv2.imwrite('grayscale.jpg',grayscale)
-	# apply Canny
-	cannyImage = cannyImg(grayscale,50,150)
-	cv2.imwrite('canny.jpg',cannyImage)
+	while i < 7:
 
-	#mask image	
-	#kell irni egy fuggvenyt, ami kiszamolja pontosan a pontokat. De kb jo ertekek.
-	#edges = np.array([[(0,image.shape[0]),(450,320),(490,320),(image.shape[1],image.shape[0])]])
-	masked_image = maskImage(cannyImage)
-	cv2.imwrite('masked_image.jpg',masked_image)
+		#lines = []
+		#lane_lines = []
 
-	#----Hough Transform Line Detection----
-	# function : cv2.HoughLinesP 
-	# parameters:
-	#	rho - distance resolution of the accumulator in pixels.
-	#	theta - angle resolution of the accumulator in radians.
-	#	threshold - accumulator threshold parameter.  Only those lines are returned that get enough votes 
-	#	minLineLenght - minimum line length
-	#	maxLineGap - maximum allowed gap between points on the same line to link them.
+		i = i + 1
 
-	rho = 1
-	theta = np.pi/180
-	threshold = 20
-	min_line_len = 20
-	max_line_gap = 100
-	
-	lines = hough_transform(masked_image,rho,theta,threshold,min_line_len,max_line_gap)
+		print("\nImage nr ",i)
 
-	lane_line = lane_lines(masked_image,lines)
-	
-	print("\nLines: ")
-	print("Left: ", lane_line[0])
-	print("Right: ",lane_line[1])
-	print("")
+		#load image 
+		load_img = "test/road" + str(i) + ".jpg"
+		try:
+			image = cv2.imread(load_img)
+		except FileNotFoundError:
+			raise ValueError("Image not found!")
 
-	angle = angle_of_lines(lane_line[0],lane_line[1])
+		#grayscale the image
+		grayscale = grayscaleImage(image)
+		#grayscale_img = "test_results/grayscale" + str(i) + ".jpg"
+		#cv2.imwrite(grayscale_img,grayscale)
+		
+		# apply Canny
+		cannyImage = cannyImg(grayscale,50,150)
+		canny_img = "test_results/canny" + str(i) + ".jpg"
+		cv2.imwrite(canny_img,cannyImage)
 
-	image = draw_lines(image,lane_line)
+		#mask image	
+		masked_image = maskImage(cannyImage,i)
+		masked_img = "test_results/masked_img" + str(i) + ".jpg"
+		cv2.imwrite(masked_img,masked_image)
 
-	cv2.imwrite('detected_lines.jpg',image)
+		#----Hough Transform Line Detection----
+		# function : cv2.HoughLinesP 
+		# parameters:
+		#	rho - distance resolution of the accumulator in pixels.
+		#	theta - angle resolution of the accumulator in radians.
+		#	threshold - accumulator threshold parameter.  Only those lines are returned that get enough votes 
+		#	minLineLenght - minimum line length
+		#	maxLineGap - maximum allowed gap between points on the same line to link them.
+
+		rho = 1
+		theta = np.pi/180
+		threshold = 20
+		min_line_len = 20
+		max_line_gap = 100
+		
+		lines = hough_transform(masked_image,rho,theta,threshold,min_line_len,max_line_gap)
+
+		lane_line = lane_lines(masked_image,lines)
+		
+		print("\nLines: ")
+		print("Left: ", lane_line[0])
+		print("Right: ",lane_line[1])
+		print("")
+
+		angle = angle_of_lines(lane_line[0],lane_line[1])
+
+		image = draw_lines(image,lane_line)
+
+		detected_img = "test_results/detected_img" + str(i) + ".jpg"
+		cv2.imwrite(detected_img,image)
+
+		print("-------------------")
+
+		#time.sleep(0.5)
+
