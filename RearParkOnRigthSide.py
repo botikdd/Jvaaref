@@ -29,27 +29,27 @@ def main():
 
     speed = 8.3
     angle = 25.0
-    time = 1.0
+    time_to_sleep = 1.0
 
-    sendMotion(serialHandler, motion_event, speed, angle, time)
+    sendMotion(serialHandler, motion_event, speed, angle, time_to_sleep)
 
     speed = -8.3
     angle = -25.0
-    time = 1.3
+    time_to_sleep = 1.3
 
-    sendMotion(serialHandler, motion_event, speed, angle, time)
+    sendMotion(serialHandler, motion_event, speed, angle, time_to_sleep)
 
     speed = 8.3
     angle = 25.0
-    time = 2.5
+    time_to_sleep = 2.5
 
-    sendMotion(serialHandler, motion_event, speed, angle, time)
+    sendMotion(serialHandler, motion_event, speed, angle, time_to_sleep)
 
     speed = 8.3
     angle = 0.0
-    time = 0.2
+    time_to_sleep = 0.2
 
-    sendMotion(serialHandler, motion_event, speed, angle, time)
+    sendMotion(serialHandler, motion_event, speed, angle, time_to_sleep)
 
     brake_speed = 0.0
 
