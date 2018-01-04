@@ -3,6 +3,19 @@ import threading,serial,time,sys
 
 global serialHandler
 
+def sendMotion(serialHandler, motion_event, speed, angle, time):
+    sent = serialHandler.sendMove(speed, angle)
+
+    if sent:
+        motion_event.wait()
+        print("Motion sent")
+        
+    else:
+        print("Sending motion signal problem")
+        return None
+
+    time.sleep(time)
+
 def main():
     #Initiliazation
     global serialHandler
@@ -15,86 +28,30 @@ def main():
     serialHandler.readThread.addWaiter("BRAK",motion_event)
 
     speed = 8.3
-    brake_speed = 0.0
     angle = 25.0
+    time = 1.0
 
-    sent = serialHandler.sendMove(speed, angle)
-
-    if sent:
-        motion_event.wait()
-        print("Motion sent")
-        
-    else:
-        print("Sending motion signal problem")
-
-    time.sleep(1.0)
+    sendMotion(serialHandler, motion_event, speed, angle, time)
 
     speed = -8.3
-    brake_speed = 0.0
     angle = -25.0
+    time = 1.3
 
-    sent = serialHandler.sendMove(speed, angle)
-
-    if sent:
-        motion_event.wait()
-        print("Motion sent")
-        
-    else:
-        print("Sending motion signal problem")
-
-    time.sleep(1.3)
+    sendMotion(serialHandler, motion_event, speed, angle, time)
 
     speed = 8.3
     angle = 25.0
+    time = 2.5
 
-    sent = serialHandler.sendMove(speed, angle)
-
-    if sent:
-        motion_event.wait()
-        print("Motion sent")
-    else:
-        print("Sending motion signal problem")
-
-    time.sleep(0.3)
-
-    speed = 8.3
-    angle = 25.0
-
-    sent = serialHandler.sendMove(speed, angle)
-
-    if sent:
-        motion_event.wait()
-        print("Motion sent")
-    else:
-        print("Sending motion signal problem")
-
-    time.sleep(1.5)
-
-    speed = 8.3
-    angle = 25.0
-
-    sent = serialHandler.sendMove(speed, angle)
-
-    if sent:
-        motion_event.wait()
-        print("Motion sent")
-    else:
-        print("Sending motion signal problem")
-
-    time.sleep(0.7)
+    sendMotion(serialHandler, motion_event, speed, angle, time)
 
     speed = 8.3
     angle = 0.0
+    time = 0.2
 
-    sent = serialHandler.sendMove(speed, angle)
+    sendMotion(serialHandler, motion_event, speed, angle, time)
 
-    if sent:
-        motion_event.wait()
-        print("Motion sent")
-    else:
-        print("Sending motion signal problem")
-
-    time.sleep(0.2)
+    brake_speed = 0.0
 
     sent = serialHandler.sendBrake(brake_speed)
     if sent:
