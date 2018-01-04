@@ -1,16 +1,16 @@
-#mask the image
-#detect the road lines
-
 import cv2
 import numpy as np
 import math
-import time
+import SerialHandler
+import threading,serial,time,sys
 
-#change the image into gray scale:
+global serialHandler
+
+#Change the image into gray scale:
 def grayscaleImage(img):
 	return cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
-#identify the lanes in white color. Use canny
+#Identify the lanes in white color. Use canny
 def cannyImg(img,low_threshold,high_threshold):
 
 	'''
@@ -22,12 +22,11 @@ def cannyImg(img,low_threshold,high_threshold):
 
 	return cv2.Canny(img,low_threshold,high_threshold)
 
+#Get the vertices of the polygon
 def getPolygon(image_proba,i):
 
 	'''
-	Get the vertices of the polygon
-
-	Coordinates of the image:
+	Coordinates:
 
 	(0,0) --> left upper corner
 
@@ -70,10 +69,10 @@ def maskImage(img,i):
 
 	vertices = getPolygon(img,i)
 
-	# apply the mask
+	#Apply the mask
 	mask = np.zeros_like(img)
 
-	#fill pixels inside the given polygon
+	#Fill pixels inside the given polygon
 	#if len(mask.shape) == 2 : 255
 	#else (255,) * mask.shape[2]
 	cv2.fillPoly(mask, vertices, 255)
@@ -83,7 +82,7 @@ def maskImage(img,i):
 
 def hough_transform(img,rho,theta,threshold,min_line_len,max_line_gap):
 
-	# cv2.HoughLinesP - detects lines in the mask images
+	#cv2.HoughLinesP - detects lines in the mask images
 	lines = cv2.HoughLinesP(img,rho,theta,threshold,np.array([]),minLineLength=min_line_len,maxLineGap = max_line_gap)
 
 	'''
@@ -125,11 +124,10 @@ def avarage_lanes(lines):
 			
 			angle = (y2-y1)/(x2-x1)
 
-			# doles
 			intercept = y1 - angle*x1
 
-			# if angle < 0 --> left lane
-			# if angle > 0 --> right lane
+			# if angle < 0 --> left line
+			# if angle > 0 --> right line
 
 			if angle < 0:
 				left_lines.append((angle,intercept))
@@ -148,15 +146,14 @@ def avarage_lanes(lines):
 	else:
 		right_lane = None
 
-
 	#print("Bal sav hossza: ", len(left_lines))
 	#print("Jobb sav hossza: ", len(right_lines))
 
+    #Kicsi vonalak ne kavarjanak be pluszba. Uj savot hoznak letre.
 	if len(left_lines) * 3 < len(right_lines):
 		left_lane = None
 	if len(right_lines) * 3 < len(left_lines):
 		right_lane = None
-
 
 	return left_lane,right_lane
 
@@ -179,6 +176,7 @@ def line_pixels(y1,y2,line):
 	#return the pixels
 	return ((x1,y1),(x2,y2))
 
+#Get left and right lines
 def lane_lines(img,lines):
 
 	left_lane,right_lane = avarage_lanes(lines)
@@ -191,6 +189,7 @@ def lane_lines(img,lines):
 
 	return left_line,right_line
 
+#Draw the lines.
 def draw_lines(image,lines) :
 
 	color = [0,0,255]
@@ -204,9 +203,13 @@ def draw_lines(image,lines) :
 
 	return cv2.addWeighted(image,1.0,line_img,0.95,0.0)
 
+#Get the angles and move the car.
 def angle_of_lines(left,right):
 
 	# angle = atan(y2-y1,x2-x1) * 180 / pi
+    if left is None and right is None:
+        print("Nincs sav, Romaniaban vagyunk.")
+        return 0,0
 
 	if left is None:
 		print("No left line recognized.")
@@ -227,92 +230,139 @@ def angle_of_lines(left,right):
 	print("Left: ",angle_left)
 	print("Right: ",angle_right)
 
-	if (abs(angle_left - angle_right) < 1.5) and angle_right != 0 and angle_left != 0:
-		print("OK")
-		# if start == false
-		#	start = true
-		#	start()
-		#  else
-		#	mehet tovabb
-	else:
-		print("El van fordulva.")
-		if angle_left < angle_right:
-			print("Jobb szog nagyobb. Balra kell kanyarodni")
-
-		else:
-			print("Bal szog nagyobb. Jobbra kell kanyarodni")
-		#break
-		#merre kell forduljon az auto
-
 	return angle_left,angle_right
 
 if __name__ == "__main__":
 
+    #Initialization
 	i = 0
+    global serialHandler
 
-	while i < 7:
+    serialHandler=SerialHandler.SerialHandler()
+    serialHandler.startReadThread()
+    
+    motion_event = threading.Event()
+    serialHandler.readThread.addWaiter("MCTL",motion_event)
+    serialHandler.readThread.addWaiter("BRAK",motion_event)
 
-		#lines = []
-		#lane_lines = []
+    speed = 0.0
+    brake_speed = 0.0
+    car_angle = 0.0
 
-		i = i + 1
+    stop = False
+        
+    try:
+        while i < 7 and stop == False
 
-		print("\nImage nr ",i)
+            #lines = []
+            #lane_lines = []
 
-		#load image 
-		load_img = "test/road" + str(i) + ".jpg"
-		try:
-			image = cv2.imread(load_img)
-		except FileNotFoundError:
-			raise ValueError("Image not found!")
+            i = i + 1
 
-		#grayscale the image
-		grayscale = grayscaleImage(image)
-		#grayscale_img = "test_results/grayscale" + str(i) + ".jpg"
-		#cv2.imwrite(grayscale_img,grayscale)
-		
-		# apply Canny
-		cannyImage = cannyImg(grayscale,50,150)
-		canny_img = "test_results/canny" + str(i) + ".jpg"
-		cv2.imwrite(canny_img,cannyImage)
+            print("\nImage nr ",i)
 
-		#mask image	
-		masked_image = maskImage(cannyImage,i)
-		masked_img = "test_results/masked_img" + str(i) + ".jpg"
-		cv2.imwrite(masked_img,masked_image)
+            #load image
+            load_img = "test/road" + str(i) + ".jpg"
+            try:
+                image = cv2.imread(load_img)
+            except FileNotFoundError:
+                raise ValueError("Image not found!")
 
-		#----Hough Transform Line Detection----
-		# function : cv2.HoughLinesP 
-		# parameters:
-		#	rho - distance resolution of the accumulator in pixels.
-		#	theta - angle resolution of the accumulator in radians.
-		#	threshold - accumulator threshold parameter.  Only those lines are returned that get enough votes 
-		#	minLineLenght - minimum line length
-		#	maxLineGap - maximum allowed gap between points on the same line to link them.
+            #grayscale the image
+            grayscale = grayscaleImage(image)
+            #grayscale_img = "test_results/grayscale" + str(i) + ".jpg"
+            #cv2.imwrite(grayscale_img,grayscale)
+            
+            # apply Canny
+            cannyImage = cannyImg(grayscale,50,150)
+            canny_img = "test_results/canny" + str(i) + ".jpg"
+            cv2.imwrite(canny_img,cannyImage)
 
-		rho = 1
-		theta = np.pi/180
-		threshold = 20
-		min_line_len = 20
-		max_line_gap = 100
-		
-		lines = hough_transform(masked_image,rho,theta,threshold,min_line_len,max_line_gap)
+            #mask image
+            masked_image = maskImage(cannyImage,i)
+            masked_img = "test_results/masked_img" + str(i) + ".jpg"
+            cv2.imwrite(masked_img,masked_image)
 
-		lane_line = lane_lines(masked_image,lines)
-		
-		print("\nLines: ")
-		print("Left: ", lane_line[0])
-		print("Right: ",lane_line[1])
-		print("")
+            #----Hough Transform Line Detection----
+            # function : cv2.HoughLinesP
+            # parameters:
+            #	rho - distance resolution of the accumulator in pixels.
+            #	theta - angle resolution of the accumulator in radians.
+            #	threshold - accumulator threshold parameter.  Only those lines are returned that get enough votes
+            #	minLineLenght - minimum line length
+            #	maxLineGap - maximum allowed gap between points on the same line to link them.
 
-		angle = angle_of_lines(lane_line[0],lane_line[1])
+            rho = 1
+            theta = np.pi/180
+            threshold = 20
+            min_line_len = 20
+            max_line_gap = 100
 
-		image = draw_lines(image,lane_line)
+            lines = hough_transform(masked_image,rho,theta,threshold,min_line_len,max_line_gap)
 
-		detected_img = "test_results/detected_img" + str(i) + ".jpg"
-		cv2.imwrite(detected_img,image)
+            lane_line = lane_lines(masked_image,lines)
+            
+            print("\nLines: ")
+            print("Left: ", lane_line[0])
+            print("Right: ",lane_line[1])
+            print("")
 
-		print("-------------------")
+            #Get the angles : left & right
+            angles = angle_of_lines(lane_line[0],lane_line[1])
 
-		#time.sleep(0.5)
+            #There are no lines
+            if angles[0] == 0 and angles[1] == 0:
+
+                print("Nincs sav, Romania.")
+                sent = serialHandler.sendBrake(brake_speed)
+                if sent:
+                    motion_event.wait()
+                    print("Breaking sent")
+                
+                else:
+                    print("Sending brake signal problem")
+                print("KeyboardInterrupt Exception, wait 5 seconds for the serial handler to close connection")
+                time.sleep(5.0)
+                serialHandler.readThread.deleteWaiter("BRAK",motion_event)
+                serialHandler.readThread.deleteWaiter("MCTL",motion_event)
+                serialHandler.close()
+                stop = True
+    
+            if (abs(angles[0] - angles[1]) < 1.5) and angles[0] != 0 and angles[1] != 0:
+                print("OK. GO.")
+                if speed <= 9.0:
+                    speed = speed + 1.0
+            else:
+                print("El van fordulva.")
+                if angles[0] < angles[1]:
+                    print("Jobb szog nagyobb. Balra kell kanyarodni")
+                    if angle <= 8.0:
+                        angle = angle + 2.0
+                else:
+                    print("Bal szog nagyobb. Jobbra kell kanyarodni")
+                    if angle >= 8.0:
+                        angle = angle - 2.0
+
+            image = draw_lines(image,lane_line)
+
+            detected_img = "test_results/detected_img" + str(i) + ".jpg"
+            cv2.imwrite(detected_img,image)
+
+            print("-------------------")
+
+    except KeyboardInterrupt:
+        sent = serialHandler.sendBrake(brake_speed)
+        if sent:
+            motion_event.wait()
+            print("Braking sent")
+            
+            else:
+                print("Sending brake signal problem")
+            print("KeyboardInterrupt Exception, wait 5 seconds for the serial handler to close connection")
+            time.sleep(5.0)
+            serialHandler.readThread.deleteWaiter("BRAK",motion_event)
+            serialHandler.readThread.deleteWaiter("MCTL",motion_event)
+            serialHandler.close()
+            exit()
+
 
