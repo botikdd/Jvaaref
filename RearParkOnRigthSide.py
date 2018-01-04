@@ -3,7 +3,7 @@ import threading,serial,time,sys
 
 global serialHandler
 
-def sendMotion(serialHandler, motion_event, speed, angle, time):
+def sendMotion(serialHandler, motion_event, speed, angle, time_to_sleep):
     sent = serialHandler.sendMove(speed, angle)
 
     if sent:
@@ -14,7 +14,7 @@ def sendMotion(serialHandler, motion_event, speed, angle, time):
         print("Sending motion signal problem")
         return None
 
-    time.sleep(time)
+    time.sleep(time_to_sleep)
 
 def main():
     #Initiliazation
