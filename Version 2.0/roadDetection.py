@@ -10,8 +10,8 @@ import time
 global serialHandler
 
 #Change the image into gray scale:
-def grayscaleImage(img):
-    return cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+#def grayscaleImage(img):
+#    return cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
 #Identify the lanes in white color. Use canny
 def cannyImg(img,low_threshold,high_threshold):
@@ -264,7 +264,6 @@ if __name__ == "__main__":
     stop = False
 
     camera = piCamera.PiiCamera()
-
     
     try:
         camera.start()
@@ -282,12 +281,12 @@ if __name__ == "__main__":
                 raise ValueError("Image not found!")
 
             #grayscale the image
-            grayscale = grayscaleImage(image)
+            #grayscale = grayscaleImage(image)
             #grayscale_img = "test_results/grayscale" + str(i) + ".jpg"
             #cv2.imwrite(grayscale_img,grayscale)
             
             # apply Canny
-            cannyImage = cannyImg(grayscale,50,150)
+            cannyImage = cannyImg(image,50,150)
             #canny_img = "test_results/canny" + str(i) + ".jpg"
             #cv2.imwrite(canny_img,cannyImage)
 
