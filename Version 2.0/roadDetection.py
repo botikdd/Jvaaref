@@ -256,6 +256,7 @@ if __name__ == "__main__":
     speed = 0.0
     brake_speed = 0.0
     car_angle = 0.0
+    angle = 0.0
 
     stop = False
         
