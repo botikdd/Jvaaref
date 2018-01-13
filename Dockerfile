@@ -4,8 +4,8 @@ FROM python:3
 # installing pip3 and necessary module for subprocess
 RUN apt-get update && apt-get install -y \
     python3 \
-    python3-pip \
-    pylint
+    python3-pip
+RUN pip3 install pylint
 RUN pip3 install numpy
 RUN pip3 install matplotlib
 RUN pip3 install opencv-python
