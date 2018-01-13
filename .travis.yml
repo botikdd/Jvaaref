@@ -5,11 +5,9 @@ python:
 services:
   - docker
 
-install:
-  - apt-get pylint
-
 # command to install dependencies
 before_install:
+  - apt-get install pylint
   - docker-compose build
 
 after_install:
