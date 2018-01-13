@@ -6,11 +6,11 @@ services:
   - docker
 
 install:
-  - pylint
+  - apt-get pylint
 
 # command to install dependencies
 before_install:
   - docker-compose build
 
-script:
+after_install:
   - pylint AngleDetection.py
