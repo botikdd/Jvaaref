@@ -24,7 +24,7 @@ def cannyImg(img,low_threshold,high_threshold):
     return cv2.Canny(img,low_threshold,high_threshold)
 
 #Get the vertices of the polygon
-def getPolygon(image_proba,i):
+def getPolygon(image_proba):
 
     '''
     Coordinates:
@@ -37,8 +37,6 @@ def getPolygon(image_proba,i):
     |
 
     y
-
-    
 
     '''
 
@@ -72,12 +70,12 @@ def getPolygon(image_proba,i):
     '''
     return np.array([[bottom_left, top_left, top_right, bottom_right]], dtype=np.int32)
 
-def maskImage(img,i):
+def maskImage(img):
     
     #step 1: apply an image mask
     #step 2: keep only the region of the image defined by the polygon (vertices)
 
-    vertices = getPolygon(img,i)
+    vertices = getPolygon(img)
 
     #Apply the mask
     mask = np.zeros_like(img)
@@ -283,7 +281,7 @@ if __name__ == "__main__":
         #cv2.imwrite(canny_img,cannyImage)
 
         #mask image
-        masked_image = maskImage(cannyImage,i)
+        masked_image = maskImage(cannyImage)
         #masked_img = "test_results/masked_img" + str(i) + ".jpg"
         #cv2.imwrite(masked_img,masked_image)
 
