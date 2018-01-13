@@ -39,7 +39,7 @@ class GetDataFromDistanceSensor(Thread):
         data = data_in_string.split(';')[:-1]
         i = 0
         for sensor_data in data:
-            sensors[i].set_data(float(sensor_data))
+            self.sensors[i].set_data(float(sensor_data))
             i = i + 1
     
     def get_data_about_a_sensor(self, index):
