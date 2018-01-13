@@ -7,6 +7,12 @@ class Sensor:
     """
 
     def __init__(self, x=0, y=0, start=0):
+        """
+        Initializing sensor
+        x: x coordinate
+        y: y coordinate
+        start: where it starts, in which angle, to draw the circle arc
+        """
         self.x = x
         self.y = y
         self.data = 150 * random.random_sample()

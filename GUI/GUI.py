@@ -90,16 +90,20 @@ class Application(tk.Frame):
             # drawing the new value
             sensor.draw_sensor_data(self.canvas)
 
-        # open a new file into which to save the image received from the server 
-        with open('./Resources/imageToSave.png', 'wb') as f:
-            # receiving one block from server
-            img = self.serversocket.recv(1024)
-            # if this does't mark the end of stream it writes the data received to the opened file
-            while not img == 'end'.encode():
-                # writing data into the file
-                f.write(img)
-                # receiving the next block
-                img = self.serversocket.recv(1024)
+        # receiving one block from server
+        img = self.serversocket.recv(1024)
+        if img == 'no'.encode():
+            self.camera_image = Image.open('./Resources/way.png')
+            self.photo_camera_image = ImageTk.PhotoImage(image=self._resize_image(self.camera_image, 600, 360))
+        else:
+            # open a new file into which to save the image received from the server 
+            with open('./Resources/imageToSave.png', 'wb') as f:
+                # if this does't mark the end of stream it writes the data received to the opened file
+                while not img == 'end'.encode():
+                    # writing data into the file
+                    f.write(img)
+                    # receiving the next block
+                    img = self.serversocket.recv(1024)
         # waits 0.1 second before opening it again to load it to the GUI
         time.sleep(.1)
         # opening the received image

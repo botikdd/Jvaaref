@@ -20,5 +20,5 @@ ranges = [[30, 'red', 80],\
          [120, 'green yellow', 200],\
          [150, 'green', 240]]
 
-TCP_IP = '0.0.0.0'
+TCP_IP = '192.168.1.118'
 TCP_PORT = 50007

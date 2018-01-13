@@ -3,6 +3,7 @@ from numpy import random
 import struct
 import time
 from threading import Thread
+import glob
 
 class TCP_server(Thread):
     """
@@ -48,10 +49,10 @@ class TCP_server(Thread):
                 for i in range(6):
                     # sends the data from sensors
                     num = 150 * random.random_sample()
-                    print(num)
                     conn.send(bytearray(struct.pack('d', num)))
                 # choosing the newest image
-                name = './img' + str(random.randint(3)) + '.png'
+                print(sorted(glob.glob('/etc/img/*.png')))
+                name = sorted(glob.glob('/etc/img/*.png'))[-1]
                 # printing it's name
                 print(name)
                 # opening the image
