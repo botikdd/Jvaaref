@@ -264,63 +264,6 @@ if __name__ == "__main__":
 
     camera = piCamera.PiiCamera()
 
-    camera.start()
-    time.sleep(3) 
-
-    load_img = sorted(glob.glob('/etc/img/*.png'))[-2]
-            
-    try:
-        image = cv2.imread(load_img)
-    except FileNotFoundError:
-        raise ValueError("Image not found!")
-
-    #grayscale the image
-    #grayscale = grayscaleImage(image)
-    #grayscale_img = "test_results/grayscale" + str(i) + ".jpg"
-    #cv2.imwrite(grayscale_img,grayscale)
-    
-    # apply Canny
-    cannyImage = cannyImg(image,50,150)
-    #canny_img = "test_results/canny" + ".png"
-    #cv2.imwrite(canny_img,cannyImage)
-
-    #mask image
-    masked_image = maskImage(cannyImage)
-    masked_img = "test_results/masked_img" + ".jpg"
-    cv2.imwrite(masked_img,masked_image)
-
-    #----Hough Transform Line Detection----
-    # function : cv2.HoughLinesP
-    # parameters:
-    #   rho - distance resolution of the accumulator in pixels.
-    #   theta - angle resolution of the accumulator in radians.
-    #   threshold - accumulator threshold parameter.  Only those lines are returned that get enough votes
-    #   minLineLenght - minimum line length   
-
-    rho = 1
-    theta = np.pi/180
-    threshold = 20
-    min_line_len = 20
-    max_line_gap = 100
-
-    lines = hough_transform(masked_image,rho,theta,threshold,min_line_len,max_line_gap)
-
-    lane_line = lane_lines(masked_image,lines)
-    
-    print("\nLines: ")
-    print("Left: ", lane_line[0])
-    print("Right: ",lane_line[1])
-    print("")
-
-    image = draw_lines(image,lane_line)
-
-    detected_img = "test_results/detected_img.jpg"
-    cv2.imwrite(detected_img,image)
-
-    print("-------------------")
-
-
-    '''
     try:
         camera.start()
         time.sleep(3)
@@ -382,11 +325,11 @@ if __name__ == "__main__":
             if angles[0] == 0 and angles[1] == 0:
 
                 print("Nincs sav, Romania.")
+                '''
                 sent = serialHandler.sendBrake(brake_speed)
                 if sent:
                     motion_event.wait()
                     print("Breaking sent")
-                
                 else:
                     print("Sending brake signal problem")
                 print("KeyboardInterrupt Exception, wait 5 seconds for the serial handler to close connection")
@@ -395,8 +338,9 @@ if __name__ == "__main__":
                 serialHandler.readThread.deleteWaiter("MCTL",motion_event)
                 serialHandler.close()
                 stop = True
+                '''
 
-            if (abs(angles[0] - angles[1]) < 1.5) and angles[0] != 0 and angles[1] != 0:
+            if (abs(angles[0] - angles[1]) < 2) and angles[0] != 0 and angles[1] != 0:
                 print("OK. GO.")
                 if speed <= 9.0:
                    #speed = speed - 1.0
@@ -414,12 +358,14 @@ if __name__ == "__main__":
                         angle = angle + 2.0
                         speed = -9
 
+            '''
             sent = serialHandler.sendMove(speed, angle)
             if sent:
                 motion_event.wait()
                 print("Motion sent")
             else:
                 print("Motion event signal sent error")
+            '''
             image = draw_lines(image,lane_line)
 
             detected_img = "test_results/detected_img" + str(i) + ".jpg"
@@ -428,6 +374,7 @@ if __name__ == "__main__":
             print("-------------------")
 
     except KeyboardInterrupt:
+        '''
         sent = serialHandler.sendBrake(brake_speed)
         if sent:
             motion_event.wait()
@@ -440,6 +387,6 @@ if __name__ == "__main__":
         serialHandler.readThread.deleteWaiter("BRAK",motion_event)
         serialHandler.readThread.deleteWaiter("MCTL",motion_event)
         serialHandler.close()
+        '''
         camera._stop()
         exit()
-	'''
