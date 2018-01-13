@@ -56,8 +56,7 @@ class TCP_server(Thread):
                     num = get_data.get_data_about_a_sensor(i)
                     conn.send(bytearray(struct.pack('d', num)))
                 # choosing the newest image
-                print(sorted(glob.glob('/etc/img/*.png')))
-                name = sorted(glob.glob('/etc/img/*.png'))[-1]
+                name = sorted(glob.glob('/etc/img/*.png'))[-2]
                 # printing it's name
                 print(name)
                 # opening the image
@@ -69,11 +68,14 @@ class TCP_server(Thread):
                     # it can send the data in 1024 byte blocks
                     # so length is the number of blocks, which it can send the data and +1 if it can't be divided by 1024
                     length = int(len(b) / self.BUFFER)
-                    # sending the blocks
-                    for i in range(length):
-                        conn.send(b[i * self.BUFFER : (i + 1) * self.BUFFER])
-                    if len(b) > length * self.BUFFER:
-                        conn.send(b[length * self.BUFFER:])
+                    if length == 0:
+                        conn.send(b'no')
+                    else:
+                        # sending the blocks
+                        for i in range(length):
+                            conn.send(b[i * self.BUFFER : (i + 1) * self.BUFFER])
+                        if len(b) > length * self.BUFFER:
+                            conn.send(b[length * self.BUFFER:])
                     # waiting 0.5 seconds before sending end, which marks the end of the file data
                     # else sometimes 'end' command will be attached to the last block of data 
                     time.sleep(.5)
@@ -81,7 +83,7 @@ class TCP_server(Thread):
         # closing the socket connection
         self.server_socket.close()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     th = TCP_server()
     th.start()
     get_data.join()

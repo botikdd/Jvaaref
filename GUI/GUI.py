@@ -50,7 +50,7 @@ class Application(tk.Frame):
         self.canvas.create_image(1025, 530, image=self.photo_image)
 
         #  loading the image received from the camera
-        self.camera_image = Image.open('./Resources/way.png')
+        self.camera_image = Image.open('./Resources/way2.png')
         self.photo_camera_image = ImageTk.PhotoImage(image=self._resize_image(self.camera_image, 600, 360))
         self.canvas.create_rectangle(800, 315, 1400, 675, width=10, outline='green')
         self.canvas.create_image(800, 315, anchor=tk.NW, image=self.photo_camera_image)
@@ -93,7 +93,7 @@ class Application(tk.Frame):
         # receiving one block from server
         img = self.serversocket.recv(1024)
         if img == 'no'.encode():
-            self.camera_image = Image.open('./Resources/way.png')
+            self.camera_image = Image.open('./Resources/way2.png')
             self.photo_camera_image = ImageTk.PhotoImage(image=self._resize_image(self.camera_image, 600, 360))
         else:
             # open a new file into which to save the image received from the server 
