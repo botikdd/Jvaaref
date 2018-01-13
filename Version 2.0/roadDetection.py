@@ -40,10 +40,10 @@ def getPolygon(image_proba,i):
 	'''
 
     '''
-        left_ignore_perc = 13
-        right_ignore_perc = 13
-        top_ignore_perc = 40
-        bottom_ignore_perc = 7
+    left_ignore_perc = 13
+    right_ignore_perc = 13
+    top_ignore_perc = 40
+    bottom_ignore_perc = 7
     '''
 
 	rows = image_proba.shape[0] 	# 2464
