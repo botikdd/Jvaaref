@@ -352,8 +352,8 @@ if __name__ == "__main__":
 
         #image = draw_lines(image,lane_line)
 
-        detected_img = "test_results/detected_img" + str(i) + ".jpg"
-        cv2.imwrite(detected_img,image)
+        #detected_img = "test_results/detected_img" + str(i) + ".jpg"
+        #cv2.imwrite(detected_img,image)
 
         print("-------------------")
 
