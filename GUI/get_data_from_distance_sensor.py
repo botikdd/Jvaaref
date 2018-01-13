@@ -19,7 +19,6 @@ class GetDataFromDistanceSensor(Thread):
         self.serialHandler.startReadThread()
         self.proximityInputEvent = Event()
         self.serialHandler.readThread.addWaiter("DSPB", self.proximityInputEvent, self.set_sensor_data)
-        self.serialHandler.sendProximityRequest(True)
 
     def is_stopped(self):
         """
