@@ -9,24 +9,29 @@ import time
 
 class Application(tk.Frame):
     """
-    A frame to get data from RaspberryPI
+    A frame to show data from RaspberryPI
     """
     def __init__(self, master=None):
         """
         Initializing the frame
         """
         super().__init__(master)
+        # setting the frame's size
         self.width = master.winfo_screenwidth() + 75
         self.height = master.winfo_screenheight() - 55
         master.geometry('{}x{}+0+0'.format(self.width, self.height))
         self.pack()
 
+        # on the frame there will an image from the car
         self.image = None
+        # the image received from care, what the camera gets
         self.photo_image = None
         self.image_label = None
 
+        # setting elements on frame
         self.create_widgets()
-        
+
+        # connecting to server by socket        
         self.serversocket = None
         self.connect_to_server()
 
@@ -34,22 +39,23 @@ class Application(tk.Frame):
         """
         Creats frames elements.
         """
-        # self.quit = tk.Button(self, text='QUIT', fg='red',\
-        #                       command=root.destroy)
-        # self.quit.pack(side='top')
 
+        # loading image from the car
         self.image = Image.open('./Resources/audi.png')
         self.photo_image = ImageTk.PhotoImage(image=self.image)
 
+        # putting the images to a canvas on frame
         self.canvas = tk.Canvas(self, width=self.width, height=self.height)
         self.canvas.pack(expand='yes', fill='both')
         self.canvas.create_image(1025, 530, image=self.photo_image)
 
+        #  loading the image received from the camera
         self.camera_image = Image.open('./Resources/way.png')
         self.photo_camera_image = ImageTk.PhotoImage(image=self._resize_image(self.camera_image, 600, 360))
         self.canvas.create_rectangle(800, 315, 1400, 675, width=10, outline='green')
         self.canvas.create_image(800, 315, anchor=tk.NW, image=self.photo_camera_image)
 
+        # defining the sensors, which contains the data received from the distance sensors
         self.sensors = []
         self.sensors.append(Sensor(315, 225, 105))
         self.sensors.append(Sensor(315, 762, 180))
@@ -58,6 +64,7 @@ class Application(tk.Frame):
         self.sensors.append(Sensor(1650, 270, -10))
         self.sensors.append(Sensor(1650, 721, -60))
 
+        # draw the data form distance sensors
         for sensor in self.sensors:
             sensor.draw_sensor_data(self.canvas)
 
@@ -71,24 +78,34 @@ class Application(tk.Frame):
         """
         Got actual data from server
         """
+        # send reqiest to server
         self.serversocket.send(b'get')
         for sensor in self.sensors:
+            # receiveing data from server
             data = self.serversocket.recv(8)
+            # converting it to number format into bytes 
             (num,) = struct.unpack('d', data)
+            # setting the got data to the proper sensor
             sensor.set_data(num)
+            # drawing the new value
             sensor.draw_sensor_data(self.canvas)
 
-
+        # open a new file into which to save the image received from the server 
         with open('./Resources/imageToSave.png', 'wb') as f:
+            # receiving one block from server
             img = self.serversocket.recv(1024)
-            print(img)
+            # if this does't mark the end of stream it writes the data received to the opened file
             while not img == 'end'.encode():
+                # writing data into the file
                 f.write(img)
+                # receiving the next block
                 img = self.serversocket.recv(1024)
-                print(img)
+        # waits 0.1 second before opening it again to load it to the GUI
         time.sleep(.1)
+        # opening the received image
         self.camera_image = Image.open('./Resources/imageToSave.png')
         self.photo_camera_image = ImageTk.PhotoImage(image=self._resize_image(self.camera_image, 600, 360))
+        # showing it on the canvas
         self.canvas.create_rectangle(800, 315, 1400, 675, width=10, outline='green')
         self.canvas.create_image(800, 315, anchor=tk.NW, image=self.photo_camera_image)
 
