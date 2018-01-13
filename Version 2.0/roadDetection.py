@@ -204,14 +204,13 @@ def draw_lines(image,lines) :
 
     #color = [0,0,255]
     color = (0,0,255)
-    thickness = 70
+    thickness = 15
 
     line_img = np.zeros_like(image)
 
     for line in lines:
         if line is not None:
-            for (x1,y1),(x2,y2) in line:
-                cv2.line(line_img,(x1,y1),(x2,y2),color,thickness)
+            cv2.line(line_img,line[0],line[1],color,thickness)
 
     return cv2.addWeighted(image,1.0,line_img,0.95,0.0)
 
@@ -315,8 +314,8 @@ if __name__ == "__main__":
 
     image = draw_lines(image,lane_line)
 
-    #detected_img = "test_results/detected_img" + str(i) + ".jpg"
-    #cv2.imwrite(detected_img,image)
+    detected_img = "test_results/detected_img.jpg"
+    cv2.imwrite(detected_img,image)
 
     print("-------------------")
 
