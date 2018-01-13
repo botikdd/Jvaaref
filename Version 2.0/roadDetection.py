@@ -39,6 +39,13 @@ def getPolygon(image_proba,i):
 
 	'''
 
+    '''
+        left_ignore_perc = 13
+        right_ignore_perc = 13
+        top_ignore_perc = 40
+        bottom_ignore_perc = 7
+    '''
+
 	rows = image_proba.shape[0] 	# 2464
 	cols = image_proba.shape[1]		# 3280
 
@@ -235,7 +242,6 @@ def angle_of_lines(left,right):
 if __name__ == "__main__":
 
     #Initialization
-	i = 0
     global serialHandler
 
     serialHandler=SerialHandler.SerialHandler()
@@ -252,17 +258,12 @@ if __name__ == "__main__":
     stop = False
         
     try:
-        while i < 7 and stop == False
-
-            #lines = []
-            #lane_lines = []
-
-            i = i + 1
-
-            print("\nImage nr ",i)
-
+        while stop == False:
+        
             #load image
-            load_img = "test/road" + str(i) + ".jpg"
+            #load_img = "test/road" + str(i) + ".jpg"
+            load_img = sorted(glob.glob('/etc/img/*.png'))[-1]
+            
             try:
                 image = cv2.imread(load_img)
             except FileNotFoundError:
@@ -275,13 +276,13 @@ if __name__ == "__main__":
             
             # apply Canny
             cannyImage = cannyImg(grayscale,50,150)
-            canny_img = "test_results/canny" + str(i) + ".jpg"
-            cv2.imwrite(canny_img,cannyImage)
+            #canny_img = "test_results/canny" + str(i) + ".jpg"
+            #cv2.imwrite(canny_img,cannyImage)
 
             #mask image
             masked_image = maskImage(cannyImage,i)
-            masked_img = "test_results/masked_img" + str(i) + ".jpg"
-            cv2.imwrite(masked_img,masked_image)
+            #masked_img = "test_results/masked_img" + str(i) + ".jpg"
+            #cv2.imwrite(masked_img,masked_image)
 
             #----Hough Transform Line Detection----
             # function : cv2.HoughLinesP
@@ -331,17 +332,17 @@ if __name__ == "__main__":
             if (abs(angles[0] - angles[1]) < 1.5) and angles[0] != 0 and angles[1] != 0:
                 print("OK. GO.")
                 if speed <= 9.0:
-                    speed = speed + 1.0
+                    speed = speed - 1.0
             else:
                 print("El van fordulva.")
                 if angles[0] < angles[1]:
                     print("Jobb szog nagyobb. Balra kell kanyarodni")
                     if angle <= 8.0:
-                        angle = angle + 2.0
+                        angle = angle - 2.0
                 else:
                     print("Bal szog nagyobb. Jobbra kell kanyarodni")
                     if angle >= 8.0:
-                        angle = angle - 2.0
+                        angle = angle + 2.0
 
             image = draw_lines(image,lane_line)
 
