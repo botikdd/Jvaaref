@@ -41,6 +41,11 @@ class MessageConverter:
         if activate:
             l_value=1
         return '#SFBR:%d;'%l_value+';\r\n'
+    def DSPB(activate=True):
+        l_value=0
+        if acivate:
+            l_value=1
+        return '#DSPB:%d;'%l_value+';\r\n'
     def ENPB(activate=True):
         l_value=0
         if activate:
@@ -160,6 +165,13 @@ class SerialHandler:
             return False
     def sendEncoderActivation(self,activate=True):
         str_msg=MessageConverter.ENPB(activate)
+        if str_msg!="":
+            self.send(str_msg)
+            return True
+        else:
+            return False
+    def sendSensorGetValue(self, activate=True):
+        str_msg=MessageConverter.DSPB(activate)
         if str_msg!="":
             self.send(str_msg)
             return True
