@@ -208,7 +208,8 @@ def draw_lines(image,lines) :
 
     for line in lines:
         if line is not None:
-            cv2.line(line_img,*line,color,thickness)
+            for x1,x2,y1,y2 in line:
+                cv2.line(line_img,(x1,y1),(x2,y2),color,thickness)
 
     return cv2.addWeighted(image,1.0,line_img,0.95,0.0)
 
