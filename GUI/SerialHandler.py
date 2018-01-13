@@ -38,7 +38,7 @@ class MessageConverter:
         return '#PIDA:%d;'%l_value+';\r\n'
     def DSPB(activate=True):
         l_value=0
-        if acivate:
+        if activate:
             l_value=1
         return '#DSPB:%d;'%l_value+';\r\n'
     def SFBR(activate=True):
