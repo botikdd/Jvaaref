@@ -309,8 +309,8 @@ if __name__ == "__main__":
     #lane_line = lane_lines(masked_image,lines)
     
     print("\nLines: ")
-    print("Left: ", lane_line[0])
-    print("Right: ",lane_line[1])
+    #print("Left: ", lane_line[0])
+    #print("Right: ",lane_line[1])
     print("")
 
     #image = draw_lines(image,lane_line)
