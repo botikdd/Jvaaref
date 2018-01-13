@@ -4,6 +4,8 @@ import math
 import SerialHandler
 import threading,serial,time,sys
 import glob
+import piCamera
+import time
 
 global serialHandler
 
@@ -260,8 +262,14 @@ if __name__ == "__main__":
     angle = 0.0
 
     stop = False
+
+    camera = piCamera.PiiCamera()
+
     
     try:
+        camera.start()
+        time.sleep(3)
+
         while stop == False:
         
             #load image
@@ -357,10 +365,10 @@ if __name__ == "__main__":
                 print("Motion sent")
             else:
                 print("Motion event signal sent error")
-            #image = draw_lines(image,lane_line)
+            image = draw_lines(image,lane_line)
 
-            #detected_img = "test_results/detected_img" + str(i) + ".jpg"
-            #cv2.imwrite(detected_img,image)
+            detected_img = "test_results/detected_img" + str(i) + ".jpg"
+            cv2.imwrite(detected_img,image)
 
             print("-------------------")
 
@@ -377,4 +385,5 @@ if __name__ == "__main__":
         serialHandler.readThread.deleteWaiter("BRAK",motion_event)
         serialHandler.readThread.deleteWaiter("MCTL",motion_event)
         serialHandler.close()
+        camera._stop()
         exit()
