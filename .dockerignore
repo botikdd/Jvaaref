@@ -1,0 +1,23 @@
+# Specific directory ignores
+
+.git/
+.idea/
+Help_sources/
+Help_sources_version_2/
+TCP_socket/
+
+# Specific extension ignores
+
+*.yml
+*.md
+*.pyc
+
+# Specific file ignores
+
+.gitignore
+.dockerignore
+Dockerfile
+ParalellParkOnRightSide.py
+RearParkOnRigthSide.py
+SerialHandler.py
+test.py

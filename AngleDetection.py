@@ -45,7 +45,7 @@ def weighted_img(img, initial_img, alpha=0.8, beta=1.0, gamma=0.0):
 
 def main():
     dir_path = dirname(realpath(__file__))
-    path = dir_path+"\\..\\pictures"
+    path = dir_path+"\\pictures"
     left_ignore_perc = 13
     right_ignore_perc = 13
     top_ignore_perc = 40
