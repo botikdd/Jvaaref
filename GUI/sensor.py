@@ -15,15 +15,17 @@ class Sensor:
         """
         self.x = x
         self.y = y
-        self.data = 150 * random.random_sample()
+        self.data = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        self.index = 0
         self.start = start
         self.arc_id = None
 
     def get_data(self):
-        return self.data
+        return self.data[self.index]
 
     def set_data(self, data):
-        self.data = data
+        self.index = (self.index + 1) % 10
+        self.data[self.index] = data
 
     def __draw_sensor(self, canvas=None):
         """
@@ -40,7 +42,7 @@ class Sensor:
         it.
         """
         for rang in ranges:
-            if self.data < rang[0]:
+            if self.data[self.index] < rang[0]:
                 return rang[1], rang[2]
         return '', 0
 

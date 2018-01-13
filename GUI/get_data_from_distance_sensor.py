@@ -36,7 +36,7 @@ class GetDataFromDistanceSensor(Thread):
         """
         
         """
-        data = data_in_string.split(';')
+        data = data_in_string.split(';')[:-1]
         print(data)
         print()
 
