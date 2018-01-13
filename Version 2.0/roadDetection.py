@@ -369,12 +369,12 @@ if __name__ == "__main__":
         if sent:
             motion_event.wait()
             print("Braking sent")
-            
-            else:
-                print("Sending brake signal problem")
-            print("KeyboardInterrupt Exception, wait 5 seconds for the serial handler to close connection")
-            time.sleep(5.0)
-            serialHandler.readThread.deleteWaiter("BRAK",motion_event)
-            serialHandler.readThread.deleteWaiter("MCTL",motion_event)
-            serialHandler.close()
-            exit()
+        else:
+            print("Sending brake signal problem")
+
+        print("KeyboardInterrupt Exception, wait 5 seconds for the serial handler to close connection")
+        time.sleep(5.0)
+        serialHandler.readThread.deleteWaiter("BRAK",motion_event)
+        serialHandler.readThread.deleteWaiter("MCTL",motion_event)
+        serialHandler.close()
+        exit()
