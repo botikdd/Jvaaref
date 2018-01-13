@@ -8,7 +8,7 @@ class PiiCamera:
     def __init__(self, resolution=(384, 216), cameraeffect=(128,128)):
         self.camera = PiCamera()
         self.camera.resolution = resolution
-        #self.camera.color_effects = cameraeffect
+        self.camera.color_effects = cameraeffect
         self.stopped = False
     def start(self):
         Thread(target=self.update, args=()).start()

@@ -268,7 +268,7 @@ if __name__ == "__main__":
     camera.start()
     time.sleep(3) 
 
-    load_img = sorted(glob.glob('/etc/img/*.png'))[-1]
+    load_img = sorted(glob.glob('/etc/img/*.png'))[-2]
             
     try:
         image = cv2.imread(load_img)
@@ -282,11 +282,11 @@ if __name__ == "__main__":
     
     # apply Canny
     cannyImage = cannyImg(image,50,150)
-    #canny_img = "test_results/canny" + str(i) + ".jpg"
-    #cv2.imwrite(canny_img,cannyImage)
+    canny_img = "test_results/canny" + ".png"
+    cv2.imwrite(canny_img,cannyImage)
 
     #mask image
-    masked_image = maskImage(cannyImage)
+    #masked_image = maskImage(cannyImage)
     #masked_img = "test_results/masked_img" + str(i) + ".jpg"
     #cv2.imwrite(masked_img,masked_image)
 
@@ -304,19 +304,19 @@ if __name__ == "__main__":
     min_line_len = 20
     max_line_gap = 100
 
-    lines = hough_transform(masked_image,rho,theta,threshold,min_line_len,max_line_gap)
+    #lines = hough_transform(masked_image,rho,theta,threshold,min_line_len,max_line_gap)
 
-    lane_line = lane_lines(masked_image,lines)
+    #lane_line = lane_lines(masked_image,lines)
     
     print("\nLines: ")
     print("Left: ", lane_line[0])
     print("Right: ",lane_line[1])
     print("")
 
-    image = draw_lines(image,lane_line)
+    #image = draw_lines(image,lane_line)
 
-    detected_img = "test_results/detected_img" + str(i) + ".jpg"
-    cv2.imwrite(detected_img,image)
+    #detected_img = "test_results/detected_img" + str(i) + ".jpg"
+    #cv2.imwrite(detected_img,image)
 
     print("-------------------")
 
