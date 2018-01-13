@@ -282,13 +282,13 @@ if __name__ == "__main__":
     
     # apply Canny
     cannyImage = cannyImg(image,50,150)
-    canny_img = "test_results/canny" + ".png"
-    cv2.imwrite(canny_img,cannyImage)
+    #canny_img = "test_results/canny" + ".png"
+    #cv2.imwrite(canny_img,cannyImage)
 
     #mask image
-    #masked_image = maskImage(cannyImage)
-    #masked_img = "test_results/masked_img" + str(i) + ".jpg"
-    #cv2.imwrite(masked_img,masked_image)
+    masked_image = maskImage(cannyImage)
+    masked_img = "test_results/masked_img" + ".jpg"
+    cv2.imwrite(masked_img,masked_image)
 
     #----Hough Transform Line Detection----
     # function : cv2.HoughLinesP
