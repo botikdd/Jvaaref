@@ -2,8 +2,8 @@
 FROM python:3
 
 # installing pip3 and necessary module for subprocess
-RUN sudo apt-get install python3-pip
-RUN sudo apt-get install pylint
+RUN apt-get install python3-pip
+RUN apt-get install pylint
 RUN pip3 install numpy
 RUN pip3 install matplotlib
 RUN pip3 install opencv-python
