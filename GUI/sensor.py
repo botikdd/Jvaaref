@@ -44,6 +44,8 @@ class Sensor:
         for rang in ranges:
             if self.data[self.index] < rang[0]:
                 return rang[1], rang[2]
+        if self.data[self.index] > ranges[-1][0]:
+            return ranges[-1][1], ranges[-1][2]
         return '', 0
 
     def draw_sensor_data(self, canvas=None):

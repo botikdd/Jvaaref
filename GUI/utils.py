@@ -14,11 +14,14 @@ class Utils:
     def get_password(self):
         return 'root'
 
-ranges = [[30, 'red', 80],\
-         [60, 'dark orange', 120],\
-         [90, 'gold', 160],\
-         [120, 'green yellow', 200],\
-         [150, 'green', 240]]
+ranges = [[30, 'black', 30],\
+         [60, 'firebrick', 60],\
+         [90, 'red', 90],\
+         [120, 'dark orange', 120],\
+         [150, 'moccasin', 150],\
+         [180, 'yellow', 180],\
+         [210, 'green yellow', 210],\
+         [240, 'green', 240]]
 
 TCP_IP = '192.168.1.118'
 TCP_PORT = 50007

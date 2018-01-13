@@ -57,10 +57,10 @@ class Application(tk.Frame):
 
         # defining the sensors, which contains the data received from the distance sensors
         self.sensors = []
-        self.sensors.append(Sensor(315, 225, 105))
         self.sensors.append(Sensor(315, 762, 180))
         self.sensors.append(Sensor(240, 330, 125))
         self.sensors.append(Sensor(240, 656, 145))
+        self.sensors.append(Sensor(315, 225, 105))
         self.sensors.append(Sensor(1650, 270, -10))
         self.sensors.append(Sensor(1650, 721, -60))
 
@@ -84,11 +84,13 @@ class Application(tk.Frame):
             # receiveing data from server
             data = self.serversocket.recv(8)
             # converting it to number format into bytes 
+            print(data)
             (num,) = struct.unpack('d', data)
             # setting the got data to the proper sensor
             sensor.set_data(num)
             # drawing the new value
             sensor.draw_sensor_data(self.canvas)
+        print('{};{};{};{};{};{};'.format(self.sensors[0].get_data(), self.sensors[1].get_data(), self.sensors[2].get_data(), self.sensors[3].get_data(), self.sensors[4].get_data(), self.sensors[5].get_data()))
 
         # receiving one block from server
         img = self.serversocket.recv(1024)
@@ -113,7 +115,7 @@ class Application(tk.Frame):
         self.canvas.create_rectangle(800, 315, 1400, 675, width=10, outline='green')
         self.canvas.create_image(800, 315, anchor=tk.NW, image=self.photo_camera_image)
 
-        self.master.after(1000, self.refresh_loop)
+        self.master.after(500, self.refresh_loop)
 
     def connect_to_server(self):
         """
@@ -135,7 +137,7 @@ if __name__ == '__main__':
     root.configure(background='green')
     # root.attributes('-fullscreen', True)
     app = Application(master=root)
-    root.after(1000, app.refresh_loop)
+    root.after(500, app.refresh_loop)
     app.pack(fill='both', expand='yes')
     # root.state("zoomed")
     app.mainloop()
