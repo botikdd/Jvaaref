@@ -254,7 +254,7 @@ if __name__ == "__main__":
     serialHandler.readThread.addWaiter("MCTL",motion_event)
     serialHandler.readThread.addWaiter("BRAK",motion_event)
 
-    speed = 0.0
+    speed = -9.0
     brake_speed = 0.0
     car_angle = 0.0
     angle = 0.0
@@ -341,15 +341,21 @@ if __name__ == "__main__":
             print("El van fordulva.")
             if angles[0] < angles[1]:
                 print("Jobb szog nagyobb. Balra kell kanyarodni")
-                if angle <= 8.0:
+                if angle >= -10.0:
                     angle = angle - 2.0
                     speed = -9
             else:
                 print("Bal szog nagyobb. Jobbra kell kanyarodni")
-                if angle >= 8.0:
+                if angle <= 10.0:
                     angle = angle + 2.0
                     speed = -9
 
+        sent = serialHandler.sendMove(speed, angle)
+        if sent:
+            motion_event.wait()
+            print("Motion sent")
+        else:
+            print("Motion event signal sent error")
         #image = draw_lines(image,lane_line)
 
         #detected_img = "test_results/detected_img" + str(i) + ".jpg"
@@ -357,4 +363,4 @@ if __name__ == "__main__":
 
         print("-------------------")
 
-
+    
