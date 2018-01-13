@@ -11,11 +11,13 @@ TCP_socket/
 *.yml
 *.md
 *.pyc
+*.stackdump
 
 # Specific file ignores
 
 .gitignore
 .dockerignore
+.travis.yml
 Dockerfile
 ParalellParkOnRightSide.py
 RearParkOnRigthSide.py

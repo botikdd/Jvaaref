@@ -3,12 +3,12 @@ FROM python:3
 
 # installing pip3 and necessary module for subprocess
 RUN sudo apt-get install python3-pip
-RUN pip3 install subprocess
+RUN sudo apt-get install pylint
 RUN pip3 install numpy
 RUN pip3 install matplotlib
 RUN pip3 install opencv-python
 
-RUN mkdir /usr/team/Jvaaref/lab5
+RUN mkdir -p /usr/team/Jvaaref/lab5
 
 # Copy all local files to VM
 # Hint: add a .dockerignore file to ignore certain files on COPY

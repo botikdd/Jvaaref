@@ -1,6 +1,5 @@
 version: '3'
 services:
-  web:
+  jvaaref:
     build: .
-    ports:
-     - "5000:5000"
+    command: python3 AngleDetection.py

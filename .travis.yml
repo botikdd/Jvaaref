@@ -1,0 +1,11 @@
+language: python
+python:
+  - "3.6"
+
+services:
+  - docker
+
+# command to install dependencies
+before_install:
+  - pylint AngleDetection.py
+  - docker-compose build
