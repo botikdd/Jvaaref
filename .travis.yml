@@ -7,7 +7,7 @@ services:
 
 # command to install dependencies
 before_install:
-  - apt-get install pylint
+  - sudo apt-get install pylint
   - docker-compose build
 
 after_install:
