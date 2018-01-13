@@ -39,12 +39,6 @@ class GetDataFromDistanceSensor(Thread):
         """
         print(data_in_string)
 
-    def run(self):
-        while not self.is_stopped():
-            print("running")
-
 if __name__ == '__main__':
     th = GetDataFromDistanceSensor()
     th.start()
-    time.sleep(5)
-    th.set_stop()
