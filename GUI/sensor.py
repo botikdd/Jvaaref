@@ -1,5 +1,5 @@
 from tkinter import Canvas
-import random
+from numpy import random
 from utils import ranges
 class Sensor:
     """
@@ -9,14 +9,9 @@ class Sensor:
     def __init__(self, x=0, y=0, start=0):
         self.x = x
         self.y = y
-        self.data = random.randint(0, 150)
+        self.data = 150 * random.random_sample()
         self.start = start
         self.arc_id = None
-        self.ranges = [[30, 'red', 80],\
-                       [60, 'dark orange', 120],\
-                       [90, 'gold', 160],\
-                       [120, 'green yellow', 200],\
-                       [150, 'green', 240]]
 
     def get_data(self):
         return self.data
