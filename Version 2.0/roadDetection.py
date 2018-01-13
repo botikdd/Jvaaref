@@ -304,13 +304,13 @@ if __name__ == "__main__":
     min_line_len = 20
     max_line_gap = 100
 
-    #lines = hough_transform(masked_image,rho,theta,threshold,min_line_len,max_line_gap)
+    lines = hough_transform(masked_image,rho,theta,threshold,min_line_len,max_line_gap)
 
-    #lane_line = lane_lines(masked_image,lines)
+    lane_line = lane_lines(masked_image,lines)
     
     print("\nLines: ")
-    #print("Left: ", lane_line[0])
-    #print("Right: ",lane_line[1])
+    print("Left: ", lane_line[0])
+    print("Right: ",lane_line[1])
     print("")
 
     #image = draw_lines(image,lane_line)
