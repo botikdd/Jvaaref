@@ -4,6 +4,11 @@ import struct
 import time
 from threading import Thread
 import glob
+from get_data_from_distance_sensor import GetDataFromDistanceSensor
+
+global get_data
+get_data = GetDataFromDistanceSensor()
+get_data.start()
 
 class TCP_server(Thread):
     """
@@ -32,7 +37,7 @@ class TCP_server(Thread):
         """
         This will be exeduted, when the thread will be started
         """
-
+        global get_data
         # accepts a request, from the client
         conn, addr = self.server_socket.accept()
         # and waits to receive messege from it
@@ -48,7 +53,7 @@ class TCP_server(Thread):
                 # on get the server will send data received from distance sensors, and the actual image of the camera
                 for i in range(6):
                     # sends the data from sensors
-                    num = 150 * random.random_sample()
+                    num = get_data.get_data_about_a_sensor(i)
                     conn.send(bytearray(struct.pack('d', num)))
                 # choosing the newest image
                 print(sorted(glob.glob('/etc/img/*.png')))
@@ -79,3 +84,5 @@ class TCP_server(Thread):
 if __name__ == "__main__":
     th = TCP_server()
     th.start()
+    get_data.join()
+    th.join()
