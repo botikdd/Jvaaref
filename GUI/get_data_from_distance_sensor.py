@@ -38,6 +38,7 @@ class GetDataFromDistanceSensor(Thread):
         
         """
         print(data_in_string)
+        print()
 
 if __name__ == '__main__':
     th = GetDataFromDistanceSensor()
