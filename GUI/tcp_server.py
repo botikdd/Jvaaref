@@ -1,10 +1,11 @@
 from socket import *
 from numpy import random
+from threading import Thread
+from get_data_from_distance_sensor import GetDataFromDistanceSensor
+import sys
 import struct
 import time
-from threading import Thread
 import glob
-from get_data_from_distance_sensor import GetDataFromDistanceSensor
 
 global get_data
 get_data = GetDataFromDistanceSensor()
@@ -54,6 +55,8 @@ class TCP_server(Thread):
                 for i in range(6):
                     # sends the data from sensors
                     num = get_data.get_data_about_a_sensor(i)
+                    print(sys.getsizeof(num))
+                    
                     conn.send(bytearray(struct.pack('d', num)))
                 # choosing the newest image
                 name = sorted(glob.glob('/etc/img/*.png'))[-2]
@@ -76,9 +79,9 @@ class TCP_server(Thread):
                             conn.send(b[i * self.BUFFER : (i + 1) * self.BUFFER])
                         if len(b) > length * self.BUFFER:
                             conn.send(b[length * self.BUFFER:])
-                    # waiting 0.5 seconds before sending end, which marks the end of the file data
+                    # waiting 0.2 seconds before sending end, which marks the end of the file data
                     # else sometimes 'end' command will be attached to the last block of data 
-                    time.sleep(.5)
+                    time.sleep(.2)
                     conn.send(b'end')
         # closing the socket connection
         self.server_socket.close()
