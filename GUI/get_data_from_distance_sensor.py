@@ -34,7 +34,7 @@ class GetDataFromDistanceSensor(Thread):
 
     def set_sensor_data(self, data_in_string):
         """
-        
+        From a got string, splits and gets the data got from distance sensors
         """
         data = data_in_string.split(';')[:-1]
         i = 0
@@ -43,6 +43,9 @@ class GetDataFromDistanceSensor(Thread):
             i = i + 1
     
     def get_data_about_a_sensor(self, index):
+        """
+        Returns a specific sensors data
+        """
         return self.sensors[index].get_data()
 
 if __name__ == '__main__':

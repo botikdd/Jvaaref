@@ -1,6 +1,6 @@
 from tkinter import Canvas
-from numpy import random
 from utils import ranges
+
 class Sensor:
     """
     Class to describe one sensor position and the currend data
