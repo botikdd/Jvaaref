@@ -19,4 +19,5 @@ class PiiCamera(threading.Thread):
             return
  
     def stop(self):
-        self.stopped = True
+        self.stopped = Truex
+        self.stop()
