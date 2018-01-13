@@ -62,7 +62,7 @@ class ReadThread(threading.Thread):
         self.Run=False
         self.buff=""
         self.isResponse=False
-        self.printOut=f_printOut
+        self.printOut=False
         self.Responses=[]
         self.Waiters={}
     def run(self):
