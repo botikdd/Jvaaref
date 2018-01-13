@@ -335,19 +335,22 @@ if __name__ == "__main__":
         if (abs(angles[0] - angles[1]) < 1.5) and angles[0] != 0 and angles[1] != 0:
             print("OK. GO.")
             if speed <= 9.0:
-                speed = speed - 1.0
+               #speed = speed - 1.0
+               speed = -9
         else:
             print("El van fordulva.")
             if angles[0] < angles[1]:
                 print("Jobb szog nagyobb. Balra kell kanyarodni")
                 if angle <= 8.0:
                     angle = angle - 2.0
+                    speed = -9
             else:
                 print("Bal szog nagyobb. Jobbra kell kanyarodni")
                 if angle >= 8.0:
                     angle = angle + 2.0
+                    speed = -9
 
-        image = draw_lines(image,lane_line)
+        #image = draw_lines(image,lane_line)
 
         detected_img = "test_results/detected_img" + str(i) + ".jpg"
         cv2.imwrite(detected_img,image)
