@@ -10,7 +10,7 @@ class PiiCamera():
         self.camera.resolution = resolution
         self.targetdir = targetdir
         self.stopped = False
-        self.camera.color_effects = (128,128)
+        #self.camera.color_effects = (128,128)
     def start(self):
         threading.Thread(target=self.update).start()
     def update(self):
