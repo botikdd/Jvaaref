@@ -12,3 +12,7 @@ Using these tools, we have to write a program to the car to be able to:
 
 Our scope is to make a precise software, which avoid accidents and can navigate easily in the traffic.
 
+Presentation:
+
+https://prezi.com/gorktroc1xab/jvaaref/
+
