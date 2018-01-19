@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 import math
-import SerialHandler
+#import SerialHandler
 import threading,serial,time,sys
 import glob
-import piCamera
+#import piCamera
 import time
 
 #global serialHandler
@@ -221,14 +221,6 @@ def angle_of_lines(left,right):
 def main():
     
     #Initialization
-    global serialHandler
-
-    serialHandler=SerialHandler.SerialHandler()
-    serialHandler.startReadThread()
-    
-    motion_event = threading.Event()
-    serialHandler.readThread.addWaiter("MCTL",motion_event)
-    serialHandler.readThread.addWaiter("BRAK",motion_event)
 
     speed = 0
     brake_speed = 0.0
@@ -237,16 +229,16 @@ def main():
 
     stop = False
 
-    camera = piCamera.PiiCamera()
 
     try:
-        camera.start()
-        time.sleep(3)
+        #camera.start()
+        #time.sleep(3)
 
         while stop == False:
         
-            load_img = sorted(glob.glob('/etc/img/*.png'))[-1]
-            
+            load_img = sorted(glob.glob('kep2.jpg'))[-1]
+            #load_img = sorted(glob.glob('/etc/img/*.png'))[-1]
+
             try:
                 image = cv2.imread(load_img)
             except FileNotFoundError:
@@ -259,14 +251,14 @@ def main():
             
             # apply Canny
             cannyImage = cannyImg(image,50,150)
-            #canny_img = "test_results/canny.jpg"
-            #cv2.imwrite(canny_img,cannyImage)
-
+            canny_img = "test_results/canny.jpg"
+            cv2.imwrite(canny_img,cannyImage)
+            
             #mask image
             masked_image = maskImage(cannyImage)
-            #masked_img = "test_results/masked_img" + str(i) + ".jpg"
-            #cv2.imwrite(masked_img,masked_image)
-
+            masked_img = "test_results/masked_img_1.jpg"
+            cv2.imwrite(masked_img,masked_image)
+            
             #----Hough Transform Line Detection----
             # function : cv2.HoughLinesP
             # parameters:
@@ -302,22 +294,9 @@ def main():
 
                 print("No lines recognized.")
 
-                sent = serialHandler.sendBrake(brake_speed)
-                if sent:
-                    motion_event.wait()
-                    print("Breaking sent")
-                else:
-                    print("Sending brake signal problem")
-                print("KeyboardInterrupt Exception, wait 5 seconds for the serial handler to close connection")
-                time.sleep(5.0)
-                serialHandler.readThread.deleteWaiter("BRAK",motion_event)
-                serialHandler.readThread.deleteWaiter("MCTL",motion_event)
-                serialHandler.close()
-  
-
                 stop = True
 
-            if (abs(angles[0] - angles[1]) < 2) and angles[0] != 0 and angles[1] != 0:
+            if (abs(angles[0] - angles[1]) < 10) and angles[0] != 0 and angles[1] != 0:
                 speed = -8.5
             else:
                 if angles[0] < angles[1]:
@@ -330,38 +309,20 @@ def main():
                     if angle <= 10.0:
                         angle = angle + 2.0
                         speed = -9
-
-
-            sent = serialHandler.sendMove(speed, angle)
-            if sent:
-                motion_event.wait()
-                print("Motion sent")
-            else:
-                print("Motion event signal sent error")
             
-            #image = draw_lines(image,lane_line)
+            image = draw_lines(image,lane_line)
 
-            #detected_img = "test_results/detected_img" + str(i) + ".jpg"
-            #cv2.imwrite(detected_img,image)
+            detected_img = "test_results/detected_img.jpg"
+            cv2.imwrite(detected_img,image)
+
+            stop = True
 
             #print("-------------------")
+            
+            stop = True
 
     except KeyboardInterrupt:
      
-
-        sent = serialHandler.sendBrake(brake_speed)
-        if sent:
-            motion_event.wait()
-            print("Braking sent")
-        else:
-            print("Sending brake signal problem")
-
-        print("KeyboardInterrupt Exception, wait 5 seconds for the serial handler to close connection")
-        time.sleep(5.0)
-        serialHandler.readThread.deleteWaiter("BRAK",motion_event)
-        serialHandler.readThread.deleteWaiter("MCTL",motion_event)
-        serialHandler.close()
-        camera._stop()
         exit()
 
 
