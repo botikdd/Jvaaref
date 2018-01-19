@@ -7,13 +7,13 @@ import glob
 import piCamera
 import time
 
-global serialHandler
+#global serialHandler
 
 #Change the image into gray scale:
 #def grayscaleImage(img):
 #    return cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
-#Identify the lanes in white color. Use canny
+#Identify the lanes in white color. Use canny.
 def cannyImg(img,low_threshold,high_threshold):
 
     '''
@@ -42,34 +42,29 @@ def getPolygon(image_proba):
 
     '''
 
-    '''
-    left_ignore_perc = 13
-    right_ignore_perc = 13
-    top_ignore_perc = 40
-    bottom_ignore_perc = 7
-    '''
-
     rows = image_proba.shape[0]     # 2464
     cols = image_proba.shape[1]     # 3280
 
-    bottom_left  = [cols*0.4, rows*0.4]
-    top_left     = [cols*0.15, rows*0.9]
+    bottom_left  = [cols*0.2, rows*0.4]
+    top_left     = [cols*0.05, rows*0.9]
     bottom_right = [cols*0.95, rows*0.9]
-    top_right    = [cols*0.6, rows*0.32]
+    top_right    = [cols*0.8, rows*0.32]
 
     
     #TEST: draw the polygon
-    '''
     
-    cv2.circle(image_proba,(int(cols*0.4), int(rows*0.4)),20,(255,0,0),-1)
-    cv2.circle(image_proba,(int(cols*0.15), int(rows*0.9)),20,(255,0,0),-1)
-    cv2.circle(image_proba,(int(cols*0.95), int(rows*0.9)),20,(255,0,0),-1)
-    cv2.circle(image_proba,(int(cols*0.6), int(rows*0.32)),20,(255,0,0),-1)
+    '''
+    cv2.circle(image_proba,(int(cols*0.2), int(rows*0.4)),10,(255,0,0),-1)
+    cv2.circle(image_proba,(int(cols*0.05), int(rows*0.9)),10,(255,0,0),-1)
+    cv2.circle(image_proba,(int(cols*0.95), int(rows*0.9)),10,(255,0,0),-1)
+    cv2.circle(image_proba,(int(cols*0.8), int(rows*0.32)),10,(255,0,0),-1)
 
-    proba = "proba" + str(i) + ".jpg"
+
+    proba = "proba.jpg"
 
     cv2.imwrite(proba,image_proba)
     '''
+    
     return np.array([[bottom_left, top_left, top_right, bottom_right]], dtype=np.int32)
 
 def maskImage(img):
@@ -94,24 +89,6 @@ def hough_transform(img,rho,theta,threshold,min_line_len,max_line_gap):
 
     #cv2.HoughLinesP - detects lines in the mask images
     lines = cv2.HoughLinesP(img,rho,theta,threshold,np.array([]),minLineLength=min_line_len,maxLineGap = max_line_gap)
-
-    '''
-    lines = cv2.HoughLines(img,1,np.pi/180,10)
-
-    for rho,theta in lines[0]:
-        a = np.cos(theta)
-        b = np.sin(theta)
-        x0 = a*rho
-        y0 = b*rho
-
-        x1 = int(x0 + 1000*(-b))
-        y1 = int(y0 + 1000*a)
-        x2 = int(x0 - 1000*(-b))
-        y2 = int(y0 - 1000*a)
-
-        cv2.line(img1,(x1,y1),(x2,y2),(0,0,255),2)
-
-    '''
 
     return lines
 
@@ -156,10 +133,7 @@ def avarage_lanes(lines):
     else:
         right_lane = None
 
-    #print("Bal sav hossza: ", len(left_lines))
-    #print("Jobb sav hossza: ", len(right_lines))
-
-    #Kicsi vonalak ne kavarjanak be pluszba. Uj savot hoznak letre.
+    #If lines are to short, skip them, they are not useful
     if len(left_lines) * 3 < len(right_lines):
         left_lane = None
     if len(right_lines) * 3 < len(left_lines):
@@ -214,10 +188,11 @@ def draw_lines(image,lines) :
 
     return cv2.addWeighted(image,1.0,line_img,0.95,0.0)
 
-#Get the angles and move the car.
+#Get the angles
 def angle_of_lines(left,right):
 
     # angle = atan(y2-y1,x2-x1) * 180 / pi
+
     if left is None and right is None:
         print("Nincs sav, Romaniaban vagyunk.")
         return 0,0
@@ -243,8 +218,8 @@ def angle_of_lines(left,right):
 
     return angle_left,angle_right
 
-if __name__ == "__main__":
-
+def main():
+    
     #Initialization
     global serialHandler
 
@@ -255,7 +230,7 @@ if __name__ == "__main__":
     serialHandler.readThread.addWaiter("MCTL",motion_event)
     serialHandler.readThread.addWaiter("BRAK",motion_event)
 
-    speed = -9.0
+    speed = 0
     brake_speed = 0.0
     car_angle = 0.0
     angle = 0.0
@@ -270,8 +245,6 @@ if __name__ == "__main__":
 
         while stop == False:
         
-            #load image
-            #load_img = "test/road" + str(i) + ".jpg"
             load_img = sorted(glob.glob('/etc/img/*.png'))[-1]
             
             try:
@@ -286,7 +259,7 @@ if __name__ == "__main__":
             
             # apply Canny
             cannyImage = cannyImg(image,50,150)
-            #canny_img = "test_results/canny" + str(i) + ".jpg"
+            #canny_img = "test_results/canny.jpg"
             #cv2.imwrite(canny_img,cannyImage)
 
             #mask image
@@ -313,19 +286,22 @@ if __name__ == "__main__":
 
             lane_line = lane_lines(masked_image,lines)
             
-            print("\nLines: ")
-            print("Left: ", lane_line[0])
-            print("Right: ",lane_line[1])
-            print("")
+            #print("\nLines: ")
+            #print("Left: ", lane_line[0])
+            #print("Right: ",lane_line[1])
+            #print("")
 
             #Get the angles : left & right
             angles = angle_of_lines(lane_line[0],lane_line[1])
 
-            #There are no lines
+            # angles[0] -- left
+            # angles[1] -- right
+
+            # There are no lines
             if angles[0] == 0 and angles[1] == 0:
 
-                print("Nincs sav, Romania.")
-                '''
+                print("No lines recognized.")
+
                 sent = serialHandler.sendBrake(brake_speed)
                 if sent:
                     motion_event.wait()
@@ -337,44 +313,42 @@ if __name__ == "__main__":
                 serialHandler.readThread.deleteWaiter("BRAK",motion_event)
                 serialHandler.readThread.deleteWaiter("MCTL",motion_event)
                 serialHandler.close()
+  
+
                 stop = True
-                '''
 
             if (abs(angles[0] - angles[1]) < 2) and angles[0] != 0 and angles[1] != 0:
-                print("OK. GO.")
-                if speed <= 9.0:
-                   #speed = speed - 1.0
-                   speed = -9
+                speed = -8.5
             else:
-                print("El van fordulva.")
                 if angles[0] < angles[1]:
-                    print("Jobb szog nagyobb. Balra kell kanyarodni")
+                    print("Turn left.")
                     if angle >= -10.0:
                         angle = angle - 2.0
                         speed = -9
                 else:
-                    print("Bal szog nagyobb. Jobbra kell kanyarodni")
+                    print("Turn right.")
                     if angle <= 10.0:
                         angle = angle + 2.0
                         speed = -9
 
-            '''
+
             sent = serialHandler.sendMove(speed, angle)
             if sent:
                 motion_event.wait()
                 print("Motion sent")
             else:
                 print("Motion event signal sent error")
-            '''
-            image = draw_lines(image,lane_line)
+            
+            #image = draw_lines(image,lane_line)
 
-            detected_img = "test_results/detected_img" + str(i) + ".jpg"
-            cv2.imwrite(detected_img,image)
+            #detected_img = "test_results/detected_img" + str(i) + ".jpg"
+            #cv2.imwrite(detected_img,image)
 
-            print("-------------------")
+            #print("-------------------")
 
     except KeyboardInterrupt:
-        '''
+     
+
         sent = serialHandler.sendBrake(brake_speed)
         if sent:
             motion_event.wait()
@@ -387,6 +361,12 @@ if __name__ == "__main__":
         serialHandler.readThread.deleteWaiter("BRAK",motion_event)
         serialHandler.readThread.deleteWaiter("MCTL",motion_event)
         serialHandler.close()
-        '''
         camera._stop()
         exit()
+
+
+if __name__ == "__main__":
+
+    main()
+
+
