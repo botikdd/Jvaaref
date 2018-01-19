@@ -42,8 +42,11 @@ def getPolygon(image_proba):
 
     '''
 
-    rows = image_proba.shape[0]     # 2464
-    cols = image_proba.shape[1]     # 3280
+    #rows = image_proba.shape[0]     # 2464
+    #cols = image_proba.shape[1]     # 3280
+
+    rows = 384
+    cols = 216
 
     bottom_left  = [cols*0.2, rows*0.4]
     top_left     = [cols*0.05, rows*0.9]
