@@ -42,8 +42,11 @@ def getPolygon(image_proba):
 
     '''
 
-    rows = image_proba.shape[0]     # 2464
-    cols = image_proba.shape[1]     # 3280
+    #rows = image_proba.shape[0]     # 2464
+    #cols = image_proba.shape[1]     # 3280
+
+    rows = 384
+    cols = 216
 
     bottom_left  = [cols*0.2, rows*0.4]
     top_left     = [cols*0.05, rows*0.9]
@@ -236,7 +239,7 @@ def main():
 
         while stop == False:
         
-            load_img = sorted(glob.glob('kep2.jpg'))[-1]
+            load_img = sorted(glob.glob('/etc/img'))[-1]
             #load_img = sorted(glob.glob('/etc/img/*.png'))[-1]
 
             try:
@@ -252,7 +255,7 @@ def main():
             # apply Canny
             cannyImage = cannyImg(image,50,150)
             canny_img = "test_results/canny.jpg"
-            cv2.imwrite(canny_img,cannyImage)
+            #cv2.imwrite(canny_img,cannyImage)
             
             #mask image
             masked_image = maskImage(cannyImage)
