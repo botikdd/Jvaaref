@@ -16,7 +16,7 @@ class Sensor:
         self.x = x
         self.y = y
         self.data = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        self.index = 0
+        self.index = -1
         self.start = start
         self.arc_id = None
 
